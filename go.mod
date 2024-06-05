@@ -1,3 +1,3 @@
-module mango
+module inicio
 
 go 1.22
