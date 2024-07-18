@@ -16,6 +16,19 @@ COPY . .
 # Build the Go app
 RUN go build -o server ./cmd/...
 
+# Build the Vue app
+FROM node:alpine as frontend-builder
+
+WORKDIR /app
+
+# Copy the Vue project files
+COPY web/vue/package*.json ./
+RUN npm install
+COPY web/vue .
+
+# Build the Vue app
+RUN npm run build
+
 # Start a new stage from scratch
 FROM alpine:latest
 
@@ -23,8 +36,11 @@ RUN apk --no-cache add ca-certificates
 
 WORKDIR /root
 
-# Copy the binary from builder
+# Copy the binary from the builder
 COPY --from=builder /app/server .
+
+# Copy the built Vue files from the frontend-builder
+COPY --from=frontend-builder /app/dist ./web/vue/dist
 
 # Expose port to the Docker host
 EXPOSE 8080
