@@ -4,7 +4,6 @@
 <template>
   <div id="app">
     <router-view></router-view>
-    404 :( Not found
   </div>
 </template>
 
