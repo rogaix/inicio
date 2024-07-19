@@ -15,7 +15,7 @@ func SetupApiEndpoints() {
 
 func sendData(w http.ResponseWriter, r *http.Request) {
 	data := Data{
-		Message: "Hello from Go API",
+		Message: "Hello from Go API v2",
 	}
 
 	w.Header().Set("Content-Type", "application/json")

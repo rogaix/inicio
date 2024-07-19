@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"inicio/api"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -18,6 +19,9 @@ func main() {
 
 	// Serve static files from the Vue build directory
 	fs := http.FileServer(http.Dir(absPath))
+
+	// Setup API endpoints
+	api.SetupApiEndpoints()
 
 	// Handle requests and log only non-static file routes
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
