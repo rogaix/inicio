@@ -1,11 +1,11 @@
-# Start from golang base image
+# Build the Go app
 FROM golang:alpine as builder
 
 # Setting up workspace
 WORKDIR /app
 
 # Copy go mod and sum files
-COPY go.mod ./
+COPY go.mod go.sum ./
 
 # Download all dependencies
 RUN go mod download
@@ -32,7 +32,11 @@ RUN npm run build
 # Start a new stage from scratch
 FROM alpine:latest
 
-RUN apk --no-cache add ca-certificates
+# Install necessary packages including dcron
+RUN apk --no-cache add ca-certificates tzdata bash curl mysql-client dcron
+
+# Set timezone data for MySQL
+ENV MYSQL_TZINFO=/usr/share/zoneinfo
 
 WORKDIR /root
 
@@ -42,8 +46,21 @@ COPY --from=builder /app/server .
 # Copy the built Vue files from the frontend-builder
 COPY --from=frontend-builder /app/dist ./web/vue/dist
 
+# Create a crontab file and copy it to the appropriate location
+COPY crontab /etc/crontabs/root
+
+# Make the entrypoint script executable
+COPY entrypoint.sh /root/entrypoint.sh
+RUN chmod +x /root/entrypoint.sh
+
 # Expose port to the Docker host
 EXPOSE 8080
 
-# Command to run the binary
-CMD ["./server"]
+# Set environment variables for MySQL
+ENV MYSQL_HOST=mysql
+ENV MYSQL_USER="root"
+ENV MYSQL_PASSWORD=""
+ENV MYSQL_DATABASE="db5"
+
+# Set the entrypoint to the script
+ENTRYPOINT ["/root/entrypoint.sh"]

@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"  # Erlaubt leere Passwörter
+      MYSQL_DATABASE: db5
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: ""  # Muss mit MYSQL_ALLOW_EMPTY_PASSWORD konform sein
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+
+  app:
+    build: .
+    command: ./server
+    ports:
+      - "8080:8080"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ""
+      MYSQL_DATABASE: db5
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:

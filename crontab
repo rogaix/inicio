@@ -1,0 +1,2 @@
+# Crontab-Eintrag für einen Cronjob, der jede Minute ausgeführt wird
+* * * * * echo "Cronjob ausgeführt: $(date)" >> /var/log/cron.log 2>&1

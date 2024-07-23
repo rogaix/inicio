@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"inicio/api"
+	"inicio/internal/cron"
+	"inicio/internal/db"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -16,6 +18,11 @@ func main() {
 		fmt.Println("Error determining absolute path:", err)
 		return
 	}
+
+	db.SetUpDatabase()
+
+	// Setup Cron Jobs
+	go cron.StartCronJobs()
 
 	// Serve static files from the Vue build directory
 	fs := http.FileServer(http.Dir(absPath))

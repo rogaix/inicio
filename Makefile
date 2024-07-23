@@ -13,7 +13,7 @@ CONTAINER_NAME=myapp_container
 # Define the directory for the Vue frontend
 VUE_DIR=./web/vue
 
-.PHONY: all build docker-build docker-run clean-docker-build frontend-build frontend-serve
+.PHONY: all build docker-build docker-run clean-docker-build frontend-build frontend-serve docker-compose-up
 
 # This will run 'make frontend-build', 'make build', 'make docker-build' and then 'make docker-run'
 all: frontend-build build docker-build docker-run
@@ -26,11 +26,11 @@ build:
 docker-build:
 	docker build -t $(IMAGE_NAME) .
 
-# This runs the Docker container from the Docker image
+# This stops, removes any existing container, and then runs the Docker container using docker-compose
 docker-run:
 	-docker stop $(CONTAINER_NAME)
 	-docker rm $(CONTAINER_NAME)
-	docker run -p 8080:8080 --name $(CONTAINER_NAME) -d $(IMAGE_NAME)
+	docker-compose up --build -d
 
 # This will run 'make docker-build' and then remove the local binary
 clean-docker-build:
@@ -43,4 +43,4 @@ frontend-build:
 
 # This serves the Vue frontend in development mode
 frontend-serve:
-	cd $(VUE_DIR) && npm install && npm run serve
+	cd $(VUE_DIR) && npm install && npm run dev
