@@ -75,8 +75,8 @@ func StartCronJobs() {
 // It registers the cron job using the RegisterCronJob function and logs any errors encountered.
 // The callback function is executed when the cron job is triggered.
 func startTestCronJob() {
-	startTime := time.Now().Add(10 * time.Second) // Start in 10 seconds
-	interval := "*/5 * * * * *"                   // Every 5 seconds
+	startTime := time.Now().Add(10 * time.Second)
+	interval := "0 */5 * * * *"
 
 	err := RegisterCronJob("exampleJob", func() {
 		log.Println("Callback function executed")

@@ -1,15 +1,13 @@
-<script setup lang="ts">
+<script setup>
+import LoginPage from "@/components/LoginPage.vue"
+import RegisterPage from "@/components/RegisterPage.vue"
 </script>
 
 <template>
-  <div>
-    <h1>Home Page</h1>
-    <p>Welcome to the home page.</p>
-  </div>
+  <LoginPage v-if="true" />
+  <RegisterPage v-else />
+
 </template>
 
 <style scoped>
-h1 {
-  color: #42b983;
-}
 </style>
