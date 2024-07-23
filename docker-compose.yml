@@ -5,7 +5,7 @@ services:
     image: mysql:8.0
     container_name: mysql
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"  # Erlaubt leere Passwörter
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"  # Allows empty passwords
       MYSQL_DATABASE: db5
     ports:
       - "3306:3306"
@@ -17,7 +17,7 @@ services:
     container_name: phpmyadmin
     environment:
       PMA_HOST: mysql
-      MYSQL_ROOT_PASSWORD: ""  # Muss mit MYSQL_ALLOW_EMPTY_PASSWORD konform sein
+      MYSQL_ROOT_PASSWORD: ""  # Has to match MYSQL_ALLOW_EMPTY_PASSWORD
     ports:
       - "8081:80"
     depends_on:
