@@ -58,7 +58,7 @@ const { formData, errors, submitForm } = useForm()
             type="submit"
             class="rounded bg-blue-300 p-4 min-w-5"
         >
-          Submit
+          Sign In
         </button>
       </div>
     </form>
