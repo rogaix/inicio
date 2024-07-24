@@ -57,10 +57,10 @@ RUN chmod +x /root/entrypoint.sh
 EXPOSE 8080
 
 # Set environment variables for MySQL
-ENV MYSQL_HOST=mysql
-ENV MYSQL_USER="root"
-ENV MYSQL_PASSWORD=""
-ENV MYSQL_DATABASE="db5"
+ENV MYSQL_HOST=${MYSQL_HOST}
+ENV MYSQL_USER=${MYSQL_USER}
+ENV MYSQL_PASSWORD=${MYSQL_PASSWORD}
+ENV MYSQL_DATABASE=${MYSQL_DATABASE}
 
 # Set the entrypoint to the script
 ENTRYPOINT ["/root/entrypoint.sh"]
