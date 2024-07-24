@@ -18,14 +18,6 @@ export function useForm() {
         if (!formData.value.password) {
             errors.value.password = 'Password is required'
             valid = false
-        } else if (formData.value.password.length < 8) {
-            errors.value.password = 'Password must be at least 8 characters long'
-            valid = false
-        } else if (!/[A-Z]/.test(formData.value.password) ||
-            !/[0-9]/.test(formData.value.password) ||
-            !/[!@#$%^&*]/.test(formData.value.password)) {
-            errors.value.password = 'Password must include at least one uppercase letter, one number and one special character'
-            valid = false
         } else {
             errors.value.password = null
         }
@@ -46,7 +38,7 @@ export function useForm() {
     const submitForm = async () => {
         if (validateForm()) {
             try {
-                const response = await axios.post('http://localhost:8080/submit', formData.value)
+                const response = await axios.post(import.meta.env.VITE_API_URL + '/api/login', formData.value)
                 console.log(response.data)
             } catch (error) {
                 console.error('Error submitting form:', error)
