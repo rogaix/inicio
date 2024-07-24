@@ -38,7 +38,8 @@ export function useForm() {
     const submitForm = async () => {
         if (validateForm()) {
             try {
-                const response = await axios.post(import.meta.env.VITE_API_URL + '/api/login', formData.value)
+                console.log(import.meta.env.VITE_API_URL + '/login')
+                const response = await axios.post(import.meta.env.VITE_API_URL + '/login', formData.value)
                 console.log(response.data)
             } catch (error) {
                 console.error('Error submitting form:', error)

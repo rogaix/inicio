@@ -56,7 +56,8 @@ export function useForm() {
     const submitForm = async () => {
         if (validateForm()) {
             try {
-                const response = await axios.post('http://localhost:8080/submit', formData.value)
+                console.log(import.meta.env.VITE_API_URL + '/register')
+                const response = await axios.post(import.meta.env.VITE_API_URL + '/register', formData.value)
                 console.log(response.data)
             } catch (error) {
                 console.error('Error submitting form:', error)
