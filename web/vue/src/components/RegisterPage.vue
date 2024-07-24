@@ -3,7 +3,7 @@
 
 <template>
   <div class="flex justify-center items-center h-screen bg-gray-100">
-    <div class="flex flex-col w-80 space-y-4">
+    <div class="flex flex-col w-[600px] max-w-[80%] space-y-4">
       <h2 class="text-2xl font-semibold">
         Sign up an account!
         <div class="text-base mt-1 font-normal">
@@ -33,7 +33,6 @@
         </label>
         <input
             type="password"
-            name="password"
             id="password"
             class="border-gray-300 border-1 p-3 rounded-md shadow-md outline-none text-sm"
         >
@@ -45,7 +44,6 @@
         </label>
         <input
             type="password"
-            name="confirm-password"
             id="confirm-password"
             class="border-gray-300 border-1 p-3 rounded-md shadow-md outline-none text-sm"
         >
