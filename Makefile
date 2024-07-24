@@ -5,15 +5,15 @@ GOCMD=go
 TARGET=server
 
 # The image name for docker build
-IMAGE_NAME=myapp
+IMAGE_NAME=inicio-app
 
 # The container name for docker run
-CONTAINER_NAME=myapp_container
+CONTAINER_NAME=inicio-app-1
 
 # Define the directory for the Vue frontend
 VUE_DIR=./web/vue
 
-.PHONY: all build docker-build docker-run clean-docker-build frontend-build frontend-serve docker-compose-up
+.PHONY: all build docker-build docker-run clean-docker-build frontend-build frontend-serve docker-compose-up frontend
 
 # This will run 'make frontend-build', 'make build', 'make docker-build' and then 'make docker-run'
 all: frontend-build build docker-build docker-run
@@ -44,3 +44,15 @@ frontend-build:
 # This serves the Vue frontend in development mode
 frontend-serve:
 	cd $(VUE_DIR) && npm install && npm run dev
+
+# This copies the built frontend to the running Docker container
+frontend: frontend-build
+	@CONTAINER_NAME=$$(docker ps --filter "name=$(CONTAINER_NAME)" --format "{{.Names}}"); \
+	if [ -z "$$CONTAINER_NAME" ]; then \
+	    CONTAINER_NAME=$$(docker ps --filter "ancestor=$(IMAGE_NAME)" --format "{{.Names}}"); \
+	fi; \
+	if [ -z "$$CONTAINER_NAME" ]; then \
+	    echo "Error: No running container found for image $(IMAGE_NAME) or name $(CONTAINER_NAME)"; \
+	    exit 1; \
+	fi; \
+	docker cp $(VUE_DIR)/dist $$CONTAINER_NAME:/root/web/vue/
