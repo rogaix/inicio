@@ -36,7 +36,24 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		http.Error(w, "authorization header is required", http.StatusUnauthorized)
+		return
+	}
 
+	parts := strings.Split(authHeader, " ")
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		http.Error(w, "authorization header is required", http.StatusUnauthorized)
+		return
+	}
+
+	token := parts[1]
+	err := deleteSession(token)
+	if err != nil {
+		http.Error(w, "session could not be deleted", http.StatusInternalServerError)
+		return
+	}
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
