@@ -24,9 +24,6 @@ func main() {
 	// Setup Cron Jobs
 	go cron.StartCronJobs()
 
-	// Serve static files from the Vue build directory
-	fs := http.FileServer(http.Dir(absPath))
-
 	// Setup API endpoints
 	api.SetupApiEndpoints()
 
@@ -49,6 +46,7 @@ func main() {
 		if _, err := os.Stat(filePath); os.IsNotExist(err) || filepath.Ext(filePath) == "" {
 			http.ServeFile(w, r, filepath.Join(absPath, "index.html"))
 		} else {
+			fs := http.FileServer(http.Dir(absPath))
 			fs.ServeHTTP(w, r)
 		}
 	})
