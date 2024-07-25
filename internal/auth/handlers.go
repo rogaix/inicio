@@ -17,9 +17,15 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := Authenticate(credentials)
+	ipAddress, err := getIpAddress(r)
 	if err != nil {
-		http.Error(w, "Authentication failed", http.StatusUnauthorized)
+		http.Error(w, "IP Address cannot be retrieved", http.StatusBadRequest)
+	}
+
+	token, err := Authenticate(credentials, ipAddress)
+	if err != nil {
+		errMsg := fmt.Errorf("authentication failed: %v", err)
+		http.Error(w, errMsg.Error(), http.StatusUnauthorized)
 		return
 	}
 
@@ -28,6 +34,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+}
+
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {

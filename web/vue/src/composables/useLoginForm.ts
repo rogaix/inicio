@@ -1,10 +1,8 @@
 import { ref } from 'vue'
 import useApi from './useApi'
-import { useRouter } from 'vue-router'
 
 export function useForm() {
     const { request, setToken, clearToken } = useApi()
-    const router = useRouter()
 
     const formData = ref({
         password: '',
@@ -48,9 +46,9 @@ export function useForm() {
                     data: formData.value
                 });
 
-                if(response.token) {
+                if (response.token) {
                     setToken(response.token)
-                    await router.push("/")
+                    window.location.reload()
                 } else {
                     console.log('No token in response')
                 }

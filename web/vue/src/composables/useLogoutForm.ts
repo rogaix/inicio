@@ -23,6 +23,7 @@ export function useForm() {
             })
 
             clearToken()
+            window.location.reload()
         } catch (error) {
             console.error('Error submitting form:', error)
         }

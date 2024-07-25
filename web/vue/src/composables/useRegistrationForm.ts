@@ -56,17 +56,17 @@ export function useForm() {
     }
 
     const submitForm = async () => {
-        if (validateForm()) {
-            try {
-                const response = await request({
-                    method: 'post',
-                    url: '/register',
-                    data: formData.value
-                })
-            } catch (error) {
-                console.error('Error submitting form:', error)
-            }
-        }
+        // if (validateForm()) {
+        //     try {
+        //         const response = await request({
+        //             method: 'post',
+        //             url: '/register',
+        //             data: formData.value
+        //         })
+        //     } catch (error) {
+        //         console.error('Error submitting form:', error)
+        //     }
+        // }
     }
 
     return {

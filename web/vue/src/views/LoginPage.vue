@@ -1,7 +1,19 @@
 <script setup>
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useForm } from '@/composables/useLoginForm.ts'
+import { useState } from '@/composables/useState'
 
 const { formData, errors, submitForm } = useForm()
+const state = useState()
+
+onMounted(() => {
+  const router = useRouter()
+
+  if (state.isLoggedIn) {
+    router.push('/')
+  }
+})
 </script>
 
 <template>

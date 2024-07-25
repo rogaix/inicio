@@ -5,6 +5,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	"inicio/internal/models"
+	"net"
+	"net/http"
 	"os"
 	"time"
 )
@@ -18,13 +20,18 @@ type Credentials struct {
 	Password string `json:"password"`
 }
 
-func Authenticate(credentials Credentials) (string, error) {
+func Authenticate(credentials Credentials, ipAddress string) (string, error) {
 	user, err := getUserByMailAddress(credentials.Email)
 	if err != nil || !checkPassword(user.Password, credentials.Password) {
 		return "", ErrInvalidCredentials
 	}
 
 	token, err := GenerateToken(user)
+	if err != nil {
+		return "", err
+	}
+
+	err = saveSession(user, token, ipAddress)
 	if err != nil {
 		return "", err
 	}
@@ -55,6 +62,20 @@ func GenerateToken(user *models.User) (string, error) {
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
 	token, err := at.SignedString(jwtKey)
 	return token, err
+}
+
+func getIpAddress(r *http.Request) (string, error) {
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return "", err
+	}
+
+	userIP := net.ParseIP(ip)
+	if userIP == nil {
+		return "", errors.New("invalid ip address")
+	}
+
+	return ip, nil
 }
 
 func hashPassword(password string) (string, error) {

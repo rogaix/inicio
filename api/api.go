@@ -19,6 +19,7 @@ type Data struct {
 func SetupApiEndpoints() {
 	http.HandleFunc("/api/data", sendData)
 	http.HandleFunc("/api/login", auth.LoginHandler)
+	http.HandleFunc("/api/logout", auth.LogoutHandler)
 	http.HandleFunc("/api/register", auth.RegisterHandler)
 	http.HandleFunc("/api/refreshToken", auth.RefreshTokenHandler)
 }
