@@ -1,19 +1,16 @@
 <script setup>
 import LoginPage from "@/views/LoginPage.vue"
 import RegisterPage from "@/views/RegisterPage.vue"
-import { useState } from '@/composables/useState'
+import { useAuth } from '@/composables/useAuth'
 import { useForm } from '@/composables/useLogoutForm'
-import { ref } from "vue"
 
-const state = useState()
+const { isAuthenticated } = useAuth()
 const { submit } = useForm()
-
-const isLoggedIn = ref(state.isLoggedIn)
 </script>
 
 <template>
   <div
-      v-if="isLoggedIn"
+      v-if="isAuthenticated"
       class="m-5"
   >
     <a

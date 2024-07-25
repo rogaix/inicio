@@ -44,7 +44,7 @@ export function useForm() {
                     method: 'post',
                     url: '/login',
                     data: formData.value
-                });
+                })
 
                 if (response.token) {
                     setToken(response.token)
