@@ -1,8 +1,10 @@
 import { ref } from 'vue'
 import useApi from './useApi'
+import { AxiosError } from "axios"
 
 export function useForm() {
     const { request, setToken, clearToken } = useApi()
+    let loginError = ref('')
 
     const formData = ref({
         password: '',
@@ -52,8 +54,14 @@ export function useForm() {
                 } else {
                     console.log('No token in response')
                 }
-            } catch (error) {
-                console.error('Error submitting form:', error)
+            } catch (error: any) {
+                let axiosError = error as AxiosError
+
+                if (axiosError.response && axiosError.response.status === 401) {
+                    loginError.value = 'Authentication failed. The provided email and password do not match.'
+                } else {
+                    loginError.value = 'An unknown error occurred. Please try again.'
+                }
             }
         }
     }
@@ -61,6 +69,7 @@ export function useForm() {
     return {
         formData,
         errors,
-        submitForm
+        submitForm,
+        loginError
     }
 }

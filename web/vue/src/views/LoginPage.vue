@@ -3,7 +3,7 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm } from '@/composables/useLoginForm.ts'
 
-const { formData, errors, submitForm } = useForm()
+const { formData, errors, submitForm, loginError } = useForm()
 
 </script>
 
@@ -24,6 +24,13 @@ const { formData, errors, submitForm } = useForm()
           </div>
         </h2>
 
+        <div
+            v-if="loginError"
+            class="text-red-700 m-2"
+        >
+          * {{ loginError }}
+        </div>
+
         <div class="flex flex-col space-y-2">
           <span
               v-if="errors.email"
@@ -39,7 +46,7 @@ const { formData, errors, submitForm } = useForm()
               id="email"
               placeholder="E-Mail Address"
               v-model="formData.email"
-              class="border-gray-300 border-1 p-5 rounded-lg shadow-md outline-none text-base"
+              class="border-gray-300 border-1 p-5 rounded-lg shadow-md outline-none text-base focus:bg-white"
           >
         </div>
 

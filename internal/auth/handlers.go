@@ -24,8 +24,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	token, err := Authenticate(credentials, ipAddress)
 	if err != nil {
-		errMsg := fmt.Errorf("authentication failed: %v", err)
-		http.Error(w, errMsg.Error(), http.StatusUnauthorized)
+		http.Error(w, "Authentication failed: invalid credentials", http.StatusUnauthorized)
 		return
 	}
 
