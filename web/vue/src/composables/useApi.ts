@@ -27,9 +27,9 @@ export default function useApi() {
         if (errorResponse.response && errorResponse.response.status === 401) {
             refreshAuthToken()
         }
-        error.value = errorResponse;
-        return Promise.reject(errorResponse);
-    });
+        error.value = errorResponse
+        return Promise.reject(errorResponse)
+    })
 
     const request = async (options: AxiosRequestConfig<any>) => {
         try {
@@ -39,22 +39,28 @@ export default function useApi() {
         } catch(err) {
             throw error.value
         }
-    };
+    }
 
     const setToken = (newToken: string) => {
         token.value = newToken
-    };
+    }
 
     const clearToken = () => {
         token.value = ''
-    };
+    }
+
+    const hasToken = (): boolean => {
+        return token.value !== ''
+    }
 
     const refreshAuthToken = async () => {
         try {
             const response = await instance.post('/refreshToken')
             token.value = response.data.token
+            console.log("Refresh auth token completed. Token: ", token.value)
             return response
         } catch(errorResponse) {
+            console.error("Refresh auth token error: ", errorResponse)
             // @ts-ignore
             error.value = errorResponse
             return Promise.reject(errorResponse)
@@ -65,6 +71,7 @@ export default function useApi() {
         request,
         setToken,
         clearToken,
-        error
+        error,
+        hasToken
     }
 }

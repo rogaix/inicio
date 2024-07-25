@@ -63,8 +63,6 @@ export function useForm() {
                     url: '/register',
                     data: formData.value
                 })
-
-                console.log(response)
             } catch (error) {
                 console.error('Error submitting form:', error)
             }

@@ -56,5 +56,8 @@ func SetUpDatabase() {
 }
 
 func GetDB() *sql.DB {
+	if db == nil {
+		SetUpDatabase()
+	}
 	return db
 }

@@ -1,10 +1,9 @@
 package auth
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
+	"golang.org/x/crypto/bcrypt"
 	"inicio/internal/models"
 	"os"
 	"time"
@@ -43,11 +42,8 @@ func Register(user models.User) error {
 }
 
 func checkPassword(hashedPassword, password string) bool {
-	compareHashedPassword, err := hashPassword(password)
-	if (hashedPassword != compareHashedPassword) || (err != nil) {
-		return false
-	}
-	return true
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	return err == nil
 }
 
 func GenerateToken(user *models.User) (string, error) {
@@ -62,16 +58,11 @@ func GenerateToken(user *models.User) (string, error) {
 }
 
 func hashPassword(password string) (string, error) {
-	value := []byte(password)
-	hash := sha256.New()
-
-	_, err := hash.Write(value)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
 	}
-
-	hashedPassword := hash.Sum(nil)
-	return hex.EncodeToString(hashedPassword), nil
+	return string(hashedPassword), nil
 }
 
 func saveUser(user models.User) error {
