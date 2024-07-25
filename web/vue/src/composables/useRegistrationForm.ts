@@ -1,7 +1,9 @@
 import { ref } from 'vue'
-import axios from 'axios'
+import useApi from './useApi'
 
 export function useForm() {
+    const { request, setToken, clearToken } = useApi()
+
     const formData = ref({
         password: '',
         confirmPassword: '',
@@ -56,8 +58,13 @@ export function useForm() {
     const submitForm = async () => {
         if (validateForm()) {
             try {
-                const response = await axios.post(import.meta.env.VITE_API_URL + '/register', formData.value)
-                console.log(response.data)
+                const response = await request({
+                    method: 'post',
+                    url: '/register',
+                    data: formData.value
+                })
+
+                console.log(response)
             } catch (error) {
                 console.error('Error submitting form:', error)
             }

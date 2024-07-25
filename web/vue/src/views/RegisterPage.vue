@@ -13,7 +13,7 @@ const { formData, errors, submitForm } = useForm()
           <div class="text-base mt-1 font-normal">
             Already have an account?
             <span class="underline text-bold">
-                <a href="/web/vue/public">Sign In</a>
+                <a href="/login">Sign In</a>
               </span>
           </div>
         </h2>
