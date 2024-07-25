@@ -4,29 +4,29 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"inicio/internal/auth"
 	"inicio/internal/db"
+	"inicio/internal/models"
 	"log"
 	"net/http"
 )
 
-type User struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-}
-
 type Data struct {
-	Message string `json:"message"`
-	User    User   `json:"user"`
+	Message string      `json:"message"`
+	User    models.User `json:"user"`
 }
 
 func SetupApiEndpoints() {
 	http.HandleFunc("/api/data", sendData)
+	http.HandleFunc("/api/login", auth.LoginHandler)
+	http.HandleFunc("/api/register", auth.RegisterHandler)
+	http.HandleFunc("/api/refreshToken", auth.RefreshTokenHandler)
 }
 
 func sendData(w http.ResponseWriter, r *http.Request) {
 	database := db.GetDB()
 
-	var user User
+	var user models.User
 	err := database.QueryRow(""+
 		"SELECT id, name "+
 		"FROM users "+
