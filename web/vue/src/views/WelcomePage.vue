@@ -12,7 +12,10 @@ const isLoggedIn = ref(state.isLoggedIn)
 </script>
 
 <template>
-  <div v-if="isLoggedIn">
+  <div
+      v-if="isLoggedIn"
+      class="m-5"
+  >
     <a
         @click="submit"
         class="rounded-md bg-blue-300 m-4 p-2 cursor-pointer"

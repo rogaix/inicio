@@ -10,16 +10,18 @@ const state = useState()
 onMounted(() => {
   const router = useRouter()
 
-  if (state.isLoggedIn) {
+  if (state.isLoggedIn === true) {
     router.push('/')
   }
 })
 </script>
 
 <template>
-  <div class="flex justify-center items-center h-screen bg-gray-100">
-    <form @submit.prevent="submitForm">
-      <div class="flex flex-col w-[600px] max-w-[80%] space-y-4">
+  <div class="flex justify-center items-center h-screen bg-gray-100"><form
+      @submit.prevent="submitForm"
+      class="w-[600px] max-w-[80%] min-w-[300px]"
+  >
+      <div class="flex flex-col space-y-4">
         <h2 class="text-2xl font-semibold mb-4">
           Sign up an account!
           <div class="text-base mt-1 font-normal">
