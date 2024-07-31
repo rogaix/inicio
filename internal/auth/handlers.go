@@ -71,3 +71,19 @@ func DeleteSessionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func UpdateSessionHandler(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value("user").(models.User)
+	err := UpdateSession(user.Token)
+	if err != nil {
+		http.Error(w, "failed to update session activity", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(map[string]bool{"active": true})
+	if err != nil {
+		return
+	}
+}

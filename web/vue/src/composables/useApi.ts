@@ -69,6 +69,19 @@ export default function useApi() {
         }
     }
 
+    const updateSession = async () => {
+        if (token.value) {
+            try {
+                await request({
+                    method: 'post',
+                    url: '/updateSession'
+                })
+            } catch (errorResponse) {
+                console.error("Failed to update session:", errorResponse)
+            }
+        }
+    }
+
     const hasToken = (): boolean => {
         const storedToken = localStorage.getItem('token')
         return Boolean(storedToken)
@@ -102,6 +115,7 @@ export default function useApi() {
         error,
         hasToken,
         checkSession,
+        updateSession,
         updateLastActivity
     }
 }
