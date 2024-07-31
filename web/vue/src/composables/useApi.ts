@@ -75,29 +75,29 @@ export default function useApi() {
     }
 
     const checkSession = async () => {
-        const now = Date.now()
-        const inactivityPeriod = now - lastActivity.value
-
         if (!hasToken()) {
             return true
         }
+
+        const now = Date.now()
+        const inactivityPeriod = now - lastActivity.value
 
         if (inactivityPeriod > 30 * 60 * 1000) { // 30 Minutes
             clearToken()
             await deleteToken()
             return false
-        }
-
-        try {
-            const response = await request({
-                method: 'post',
-                url: '/updateSession'
-            })
-            return response.active
-        } catch (errorResponse) {
-            console.error("Check session error: ", errorResponse)
-            clearToken()
-            return false
+        } else if (inactivityPeriod < 10 * 60 * 1000) { // 15 Minutes
+            try {
+                const response = await request({
+                    method: 'post',
+                    url: '/updateSession'
+                })
+                return response.active
+            } catch (errorResponse) {
+                console.error("Check session error: ", errorResponse)
+                clearToken()
+                return false
+            }
         }
     }
 

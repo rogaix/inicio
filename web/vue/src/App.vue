@@ -12,7 +12,7 @@ const startSessionCheck = () => {
       // alert('Your session has expired. Please log in again.')
       window.location.href = '/login'
     }
-  }, 60000)
+  }, 60000 * 5)
 }
 
 const handleUserActivity = () => {
