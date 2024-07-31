@@ -9,10 +9,9 @@ const startSessionCheck = () => {
   sessionCheckInterval = setInterval(async () => {
     const isActive = await checkSession()
     if (!isActive) {
-      // alert('Your session has expired. Please log in again.')
       window.location.href = '/login'
     }
-  }, 60000 * 5)
+  }, 60000)
 }
 
 const handleUserActivity = () => {
