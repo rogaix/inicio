@@ -18,7 +18,7 @@ const routes = [
         meta: { requiresGuest: true }
     }, {
         path: '/about',
-        component: () => AboutPage,
+        component: AboutPage,
         meta: { requiresAuth: true }
     },
     { path: '/:pathMatch(.*)*', component: PageNotFound },

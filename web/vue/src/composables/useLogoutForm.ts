@@ -16,13 +16,13 @@ export function useForm() {
 
     const submit = async () => {
         try {
-            const response = await request({
+            await request({
                 method: 'post',
                 url: '/logout',
                 data: formData.value
             })
 
-            clearToken()
+            await clearToken()
             window.location.reload()
         } catch (error) {
             console.error('Error submitting form:', error)

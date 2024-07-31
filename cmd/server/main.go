@@ -20,14 +20,9 @@ func main() {
 	}
 
 	db.SetUpDatabase()
-
-	// Setup Cron Jobs
 	go cron.StartCronJobs()
-
-	// Setup API endpoints
 	api.SetupApiEndpoints()
 
-	// Handle requests and log only non-static file routes
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
@@ -43,7 +38,7 @@ func main() {
 			}()
 		}
 
-		if _, err := os.Stat(filePath); os.IsNotExist(err) || filepath.Ext(filePath) == "" {
+		if _, err = os.Stat(filePath); os.IsNotExist(err) || filepath.Ext(filePath) == "" {
 			http.ServeFile(w, r, filepath.Join(absPath, "index.html"))
 		} else {
 			fs := http.FileServer(http.Dir(absPath))
@@ -51,7 +46,6 @@ func main() {
 		}
 	})
 
-	// Start the HTTP server
 	err = http.ListenAndServe(":8080", nil)
 	if err != nil {
 		fmt.Println("Error starting server:", err)

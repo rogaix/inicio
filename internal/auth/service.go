@@ -5,6 +5,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	"inicio/internal/models"
+	"inicio/internal/models/users"
 	"net"
 	"net/http"
 	"os"
@@ -21,7 +22,7 @@ type Credentials struct {
 }
 
 func Authenticate(credentials Credentials, ipAddress string) (string, error) {
-	user, err := getUserByMailAddress(credentials.Email)
+	user, err := users.GetByMailAddress(credentials.Email)
 	if err != nil || !checkPassword(user.Password, credentials.Password) {
 		return "", ErrInvalidCredentials
 	}
@@ -87,6 +88,5 @@ func hashPassword(password string) (string, error) {
 }
 
 func saveUser(user models.User) error {
-	// Save user to the repository
 	return nil
 }

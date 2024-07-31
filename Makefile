@@ -28,8 +28,8 @@ docker-build:
 
 # This stops, removes any existing container, and then runs the Docker container using docker-compose
 docker-run:
-	-docker stop $(CONTAINER_NAME)
-	-docker rm $(CONTAINER_NAME)
+	docker stop $(CONTAINER_NAME) || true
+	docker rm $(CONTAINER_NAME) || true
 	docker-compose up --build -d
 
 # This will run 'make docker-build' and then remove the local binary

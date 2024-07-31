@@ -4,8 +4,8 @@ import axios, { AxiosRequestConfig } from 'axios'
 export default function useApi() {
     const token = ref(localStorage.getItem('token') || '')
     const error = ref(null)
-
     const baseURL = import.meta.env.VITE_API_URL
+    const lastActivity = ref(Date.now())
 
     const instance = axios.create({
         baseURL
@@ -19,15 +19,19 @@ export default function useApi() {
     })
 
     instance.interceptors.response.use((response) => {
-        if (response.data.token) {
-            localStorage.setItem('token', response.data.token)
-            token.value = response.data.token
+        if (response.headers.authorization) {
+            const newToken = response.headers.authorization.split(' ')[1]
+            localStorage.setItem('token', newToken)
+            token.value = newToken
         }
         return response
     }, (errorResponse) => {
-        // if (errorResponse.response && errorResponse.response.status === 401) {
-        //     refreshAuthToken()
-        // }
+        if (errorResponse.response && errorResponse.response.status === 401) {
+            if (hasToken()) {
+                clearToken()
+                deleteToken()
+            }
+        }
         error.value = errorResponse
         return Promise.reject(errorResponse)
     })
@@ -50,25 +54,55 @@ export default function useApi() {
     const clearToken = () => {
         localStorage.removeItem('token')
         token.value = ''
-    };
+    }
+
+    const deleteToken = async () => {
+        if (token.value) {
+            try {
+                await request({
+                    method: 'post',
+                    url: '/deleteSession'
+                })
+            } catch (error) {
+                console.error("Failed to delete session from database:", error)
+            }
+        }
+    }
 
     const hasToken = (): boolean => {
         const storedToken = localStorage.getItem('token')
         return Boolean(storedToken)
     }
 
-    const refreshAuthToken = async () => {
-        try {
-            const response = await instance.post('/refreshToken')
-            localStorage.setItem('token', response.data.token)
-            token.value = response.data.token
-            return response
-        } catch (errorResponse) {
-            console.error("Refresh auth token error: ", errorResponse)
-            // @ts-ignore
-            error.value = errorResponse
-            return Promise.reject(errorResponse)
+    const checkSession = async () => {
+        const now = Date.now()
+        const inactivityPeriod = now - lastActivity.value
+
+        if (!hasToken()) {
+            return true
         }
+
+        if (inactivityPeriod > 30 * 60 * 1000) { // 30 Minutes
+            clearToken()
+            await deleteToken()
+            return false
+        }
+
+        try {
+            const response = await request({
+                method: 'post',
+                url: '/updateSession'
+            })
+            return response.active
+        } catch (errorResponse) {
+            console.error("Check session error: ", errorResponse)
+            clearToken()
+            return false
+        }
+    }
+
+    const updateLastActivity = () => {
+        lastActivity.value = Date.now()
     }
 
     return {
@@ -76,6 +110,8 @@ export default function useApi() {
         setToken,
         clearToken,
         error,
-        hasToken
+        hasToken,
+        checkSession,
+        updateLastActivity
     }
 }

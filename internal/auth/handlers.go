@@ -2,12 +2,8 @@ package auth
 
 import (
 	"encoding/json"
-	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"inicio/internal/models"
 	"net/http"
-	"os"
-	"strings"
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,6 +16,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	ipAddress, err := getIpAddress(r)
 	if err != nil {
 		http.Error(w, "IP Address cannot be retrieved", http.StatusBadRequest)
+		return
 	}
 
 	token, err := Authenticate(credentials, ipAddress)
@@ -31,25 +28,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(map[string]string{"token": token})
 	if err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
 	}
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		http.Error(w, "authorization header is required", http.StatusUnauthorized)
-		return
-	}
-
-	parts := strings.Split(authHeader, " ")
-	if len(parts) != 2 || parts[0] != "Bearer" {
-		http.Error(w, "authorization header is required", http.StatusUnauthorized)
-		return
-	}
-
-	token := parts[1]
-	err := deleteSession(token)
+	user := r.Context().Value("user").(models.User)
+	err := deleteSession(user.Token)
 	if err != nil {
 		http.Error(w, "session could not be deleted", http.StatusInternalServerError)
 		return
@@ -71,51 +57,33 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func RefreshTokenHandler(w http.ResponseWriter, r *http.Request) {
-	tokenString := r.Header.Get("Authorization")
-
-	if len(strings.Split(tokenString, " ")) == 2 {
-		tokenString = strings.Split(tokenString, " ")[1]
-	} else {
+func DeleteSessionHandler(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value("user").(models.User)
+	err := deleteSession(user.Token)
+	if err != nil {
+		http.Error(w, "failed to delete session activity", http.StatusInternalServerError)
 		return
 	}
 
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-
-		return []byte(os.Getenv("JWT_KEY_TOKEN")), nil
-	})
-
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write([]byte("session deleted successfully"))
 	if err != nil {
 		return
 	}
+}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		mailAddress, ok := claims["mailAddress"].(string)
-		if !ok {
-			http.Error(w, "Invalid mail address claim", http.StatusBadRequest)
-			return
-		}
-
-		// Use mail address to look up the user in DB
-		user, err := getUserByMailAddress(mailAddress)
-		if err != nil {
-			return
-		}
-
-		// Generate a new JWT for the user.
-		token, err := GenerateToken(user)
-		if err != nil {
-			return
-		}
-
-		// Return the new JWT to the client in JSON format.
-		err = json.NewEncoder(w).Encode(map[string]string{"token": token})
-		if err != nil {
-			return
-		}
+func UpdateSessionHandler(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value("user").(models.User)
+	err := UpdateSession(user.Token)
+	if err != nil {
+		http.Error(w, "failed to update session activity", http.StatusInternalServerError)
+		return
 	}
-	return
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(map[string]bool{"active": true})
+	if err != nil {
+		return
+	}
 }
