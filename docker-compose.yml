@@ -9,6 +9,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - backup_folder:/backups
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -33,6 +34,10 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     depends_on:
       - mysql
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Mount Docker socket for docker exec
+      - backup_folder:/backups  # persistent volume for backups
 
 volumes:
   mysql_data:
+  backup_folder:

@@ -1,7 +1,7 @@
-# Build the Go app
+# Build stage for the Go application
 FROM golang:alpine as builder
 
-# Setting up workspace
+# Set up workspace
 WORKDIR /app
 
 # Copy go mod and sum files
@@ -29,11 +29,11 @@ COPY web/vue .
 # Build the Vue app
 RUN npm run build
 
-# Start a new stage from scratch
+# Final image
 FROM alpine:latest
 
-# Install necessary packages including dcron
-RUN apk --no-cache add ca-certificates tzdata bash curl mysql-client dcron
+# Install necessary packages including docker-cli and dcron
+RUN apk --no-cache add ca-certificates tzdata bash curl mysql-client dcron docker-cli
 
 # Set timezone data for MySQL
 ENV MYSQL_TZINFO=/usr/share/zoneinfo
@@ -48,6 +48,10 @@ COPY --from=frontend-builder /app/dist ./web/vue/dist
 
 # Create a crontab file and copy it to the appropriate location
 COPY crontab /etc/crontabs/root
+
+# Copy the backup script and make it executable
+COPY backup_script.sh /root/backup_script.sh
+RUN chmod +x /root/backup_script.sh
 
 # Make the entrypoint script executable
 COPY entrypoint.sh /root/entrypoint.sh

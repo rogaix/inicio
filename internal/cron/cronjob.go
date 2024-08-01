@@ -5,6 +5,7 @@ import (
 	"github.com/robfig/cron/v3"
 	"log"
 	"os"
+	"os/exec"
 	"time"
 )
 
@@ -67,22 +68,40 @@ func logToFile(message string) {
 
 // StartCronJobs starts all the cron jobs and blocks the execution of the program.
 func StartCronJobs() {
-	startTestCronJob()
+	startBackupCronJob()
 	select {}
 }
 
-// startTestCronJob starts a test cron job with a specified start time and interval.
-// It registers the cron job using the RegisterCronJob function and logs any errors encountered.
-// The callback function is executed when the cron job is triggered.
-func startTestCronJob() {
-	startTime := time.Now().Add(10 * time.Second)
-	interval := "0 */5 * * * *"
+// startBackupCronJob starts a backup cron job with a specified interval and callback.
+func startBackupCronJob() {
+	// Daily at 2 o'clock in the morning
+	interval := "0 0 0,6,12,18 * * *"
 
-	err := RegisterCronJob("exampleJob", func() {
-		log.Println("Callback function executed")
-	}, startTime, interval)
+	err := RegisterCronJob("BackupCron", func() {
+		runBackupScript()
+	}, time.Now(), interval)
 
 	if err != nil {
-		log.Println("error registering cronjob:", err)
+		log.Println("error registering backup cronjob:", err)
 	}
+}
+
+// runBackupScript executes the backup script located at /root/backup_script.sh
+func runBackupScript() {
+	if os.Getenv("MYSQL_HOST") == "" || os.Getenv("MYSQL_USER") == "" || os.Getenv("MYSQL_DATABASE") == "" {
+		log.Println("error: one or more mysql variables are not defined.")
+		return
+	}
+
+	log.Println("Starting backup process...")
+	cmd := exec.Command("/bin/bash", "/root/backup_script.sh")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	err := cmd.Run()
+	if err != nil {
+		log.Printf("error executing backup script: %v", err)
+	}
+
+	log.Println("Finished backup process...")
 }

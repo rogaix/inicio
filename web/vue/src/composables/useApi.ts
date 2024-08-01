@@ -96,8 +96,8 @@ export default function useApi() {
         const inactivityPeriod = now - lastActivity.value
 
         if (inactivityPeriod > 30 * 60 * 1000) { // 30 Minutes
-            clearToken()
             await deleteToken()
+            clearToken()
             return false
         }
 
