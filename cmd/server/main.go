@@ -29,7 +29,7 @@ func main() {
 		path := r.URL.Path
 		filePath := filepath.Join(absPath, path)
 
-		isStaticFile := strings.HasPrefix(path, "/css/") || strings.HasPrefix(path, "/js/") || strings.HasPrefix(path, "/img/") || strings.HasPrefix(path, "/favicon.ico")
+		isStaticFile := strings.HasPrefix(path, "/css/") || strings.HasPrefix(path, "/js/") || strings.HasPrefix(path, "/assets/") || strings.HasPrefix(path, "/favicon.ico")
 		if !isStaticFile {
 			defer func() {
 				elapsed := time.Since(start)

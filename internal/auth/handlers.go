@@ -74,7 +74,7 @@ func DeleteSessionHandler(w http.ResponseWriter, r *http.Request) {
 
 func UpdateSessionHandler(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(models.User)
-	err := UpdateSession(user.Token)
+	err := UpdateSessionActivity(user.Token)
 	if err != nil {
 		http.Error(w, "failed to update session activity", http.StatusInternalServerError)
 		return

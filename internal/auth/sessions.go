@@ -3,8 +3,10 @@ package auth
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"inicio/internal/models"
 	"inicio/internal/models/users"
+	"log"
 	"time"
 )
 
@@ -26,14 +28,24 @@ func saveSession(user *models.User, token string, ipAddress string) error {
 func deleteSession(token string) error {
 	_, err := database.Exec("DELETE FROM sessions WHERE token = ?", token)
 	if err != nil {
-		return err
+		log.Printf("Failed to delete session for token %s: %v", token, err)
+		return fmt.Errorf("failed to delete session: %w", err)
 	}
 
+	log.Printf("Session deleted successfully for token %s", token)
 	return nil
 }
 
-func UpdateSession(token string) error {
+func UpdateSessionActivity(token string) error {
 	_, err := database.Exec("UPDATE sessions SET last_activity = ? WHERE token = ?", time.Now().Unix(), token)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func UpdateSessionToken(token string, newToken string) error {
+	_, err := database.Exec("UPDATE sessions SET token = ? WHERE token = ?", newToken, token)
 	if err != nil {
 		return err
 	}

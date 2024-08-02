@@ -28,7 +28,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		tokenString := parts[1]
 		user, err := auth.CheckSession(tokenString)
 		if err != nil {
-			http.Error(w, "session invalid or expired", http.StatusUnauthorized)
+			_ = fmt.Errorf("session invalid or expired %v, status: %d", err, http.StatusUnauthorized)
 			return
 		}
 
@@ -48,12 +48,17 @@ func AuthMiddleware(next http.Handler) http.Handler {
 					if err == nil {
 						user.Token = newToken
 						w.Header().Set("Authorization", "Bearer "+newToken)
+
+						err = auth.UpdateSessionToken(tokenString, newToken)
+						if err != nil {
+							return
+						}
 					}
 				}
 			}
 		}
 
-		err = auth.UpdateSession(tokenString)
+		err = auth.UpdateSessionActivity(tokenString)
 		if err != nil {
 			http.Error(w, "failed to update session activity", http.StatusInternalServerError)
 			return

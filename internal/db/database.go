@@ -24,7 +24,7 @@ func initDB() {
 	for {
 		db, err = sql.Open("mysql", dataSourceName)
 		if err != nil {
-			log.Println("Failed to connect to database, retrying in 3 seconds...")
+			log.Printf("Failed to connect to database: %v, retrying in 3 seconds...\n", err)
 			time.Sleep(3 * time.Second)
 			continue
 		}
@@ -49,10 +49,10 @@ func SetUpDatabase() {
 
 	err = db.Ping()
 	if err != nil {
-		log.Fatal("Error pinging database:", err)
+		log.Fatal("Error initializing database:", err)
 	}
 
-	fmt.Println("Successfully connected to the database")
+	log.Println("Database setup complete")
 }
 
 func GetDB() *sql.DB {

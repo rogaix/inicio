@@ -18,23 +18,29 @@ export default function useApi() {
         return config
     })
 
-    instance.interceptors.response.use((response) => {
-        if (response.headers.authorization) {
-            const newToken = response.headers.authorization.split(' ')[1]
-            localStorage.setItem('token', newToken)
-            token.value = newToken
-        }
-        return response
-    }, (errorResponse) => {
-        if (errorResponse.response && errorResponse.response.status === 401) {
-            if (hasToken()) {
-                clearToken()
-                deleteToken()
+    // Make the response interceptor async
+    instance.interceptors.response.use(
+        async (response) => {
+            // Handle successful response and token update
+            if (response.headers.authorization) {
+                const newToken = response.headers.authorization.split(' ')[1]
+                localStorage.setItem('token', newToken)
+                token.value = newToken
             }
+            return response
+        },
+        async (errorResponse) => {
+            if (errorResponse.response && errorResponse.response.status === 401) {
+                if (hasToken()) {
+                    clearToken()
+                    await deleteToken()
+                    window.location.href = '/login'
+                }
+            }
+            error.value = errorResponse
+            return Promise.reject(errorResponse)
         }
-        error.value = errorResponse
-        return Promise.reject(errorResponse)
-    })
+    )
 
     const request = async (options: AxiosRequestConfig<any>) => {
         try {
