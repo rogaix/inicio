@@ -31,8 +31,6 @@ func deleteSession(token string) error {
 		log.Printf("Failed to delete session for token %s: %v", token, err)
 		return fmt.Errorf("failed to delete session: %w", err)
 	}
-
-	log.Printf("Session deleted successfully for token %s", token)
 	return nil
 }
 
